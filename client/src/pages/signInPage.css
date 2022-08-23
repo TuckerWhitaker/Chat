@@ -1,8 +1,3 @@
-::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: rgb(77, 77, 77);
-    opacity: 1; /* Firefox */
-  }
-
 .parent{
     display: flex;
     align-items: center;
@@ -13,6 +8,10 @@
 
 .spacer{
     margin-top: 25vh;
+}
+
+#title{
+    color:white;
 }
 
 .txtin{
@@ -29,6 +28,8 @@
     
 }
 
+
+
 .txtin:hover{
     width: 255px;
     height: 55px;
@@ -37,7 +38,6 @@
 
 
 }
-
 
 .btn
 {
@@ -50,6 +50,7 @@
     border-color: transparent;
     font-size: medium;
 }
+
 .btn:hover
 {
 

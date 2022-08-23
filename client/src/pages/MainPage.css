@@ -1,0 +1,92 @@
+.Parent{
+    display: flex;
+    align-items:flex-start;
+    min-height: 100vh;
+    background: #2A2A2A;
+    flex-direction: row;
+}
+
+.container{
+    color: white;
+    border-width: 1px;
+    border-color: #4C4C4C;
+    border-style: solid;
+    min-width: 90vh;
+    min-height: 99.5vh;
+}
+
+#Friends{
+    max-width: 30vh;
+    min-width: 30vh;
+    background-color: #2A2A2A;
+}
+
+#Chat{
+    min-width: 163vh;
+    border-width: 1px;
+    border-color: #4C4C4C;
+    border-style: solid;
+}
+
+#chatHeader{
+    min-width: 50vh;
+    min-height:10vh;
+    background-color:#2A2A2A;
+    border-bottom-color: #8D918D;
+    border-bottom-width: 3px;
+    border-bottom-style: solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+#chatContainer{
+    min-width: 50vh;
+    height:80vh;
+    background-color:#2A2A2A;
+    overflow: auto;
+    text-align:justify;
+}
+
+#inputContainer{
+    min-width: 50vh;
+    min-height:9vh;
+    
+    background-color:#2A2A2A;
+    border-width: 1px;
+    border-color: #4C4C4C;
+    border-style: solid;
+    display: flex;
+    align-items: center;
+}
+
+#txt{
+    min-width: 145vh;
+    resize: none;
+    height:8vh;
+    font-size: 150%;
+    border-radius: 10px;
+    background-color: #4C4C4C;
+    color:#dddddd;
+
+}
+
+#btn{
+    width: 100vh;
+    height: 9vh;
+    background-color: #003049;
+    color: white;
+
+}
+
+#btn:hover{
+    background-color: white;
+    color: #003049;
+    transition-duration: .1s;
+}
+
+#btn:active{
+    background-color:#003049;
+    color: white;
+}

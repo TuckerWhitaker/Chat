@@ -1,24 +1,19 @@
 import "./App.css";
-const { io } = require("socket.io-client");
-var socket = io.connect("ws://localhost:80");
-
-const Send = () => {
-  socket.emit("message", "test message");
-  console.log("message sent");
-};
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import SignIn from "./pages/signInPage";
+import MainPage from "./pages/MainPage";
+import SignUp from "./pages/signUpPage";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <button
-          onClick={() => {
-            Send();
-          }}
-        >
-          click
-        </button>
-      </header>
+      <Router>
+        <Routes>
+          <Route exact path="/main" element={<MainPage />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<SignIn />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
