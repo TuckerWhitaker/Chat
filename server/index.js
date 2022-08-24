@@ -57,6 +57,13 @@ app.post("/SignIn", (req, res) => {
   );
 });
 
+/*
+app.post("/addFriend", (req, res) => {
+  db.query("SELECT * FROM users WHERE name = ?", [req.friendName])
+  db.query("INSERT INTO friends (id, fid, lastmessage) VALUES(?, ?, ?);", [])
+})
+*/
+
 app.post("/SignUp", (req, res) => {
   console.log("signup!");
   db.query(
@@ -85,13 +92,11 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("verify", (verify) => {
-    console.log("verify:" + verify + ":");
-
     console.log(userslist.length);
     for (let i = 0; i < userslist.length; i++) {
       console.log(":" + userslist[i][1] + ":");
       if (userslist[i][1] == verify) {
-        console.log(socket.id + " is " + userslist[i][0]);
+        console.log(socket.id + " is verified as " + userslist[i][0]);
         connectedUsers.push([userslist[i][0], socket.id]);
       }
     }
@@ -106,6 +111,24 @@ io.on("connection", (socket) => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (socket.id == connectedUsers[i][0]) connectedUsers.pop(i);
       console.log("removed " + socket.id + " From connectedUsers");
+    }
+  });
+
+  socket.on("addFriend", (friendName) => {
+    for (let i = 0; i < connectedUsers.length; i++) {
+      if (connectedUsers[1][i] == socket.id) {
+        console.log(connectedUsers[i][0]);
+        db.query(
+          "SELECT * FROM users WHERE name = ? OR name = ?",
+          [connectedUsers[i][0], friendName],
+          (err, result) => {
+            db.query("INSERT INTO friends (id, fid) VALUES(?, ?);", [
+              result[0].id,
+              result[1].id,
+            ]);
+          }
+        );
+      }
     }
   });
 });

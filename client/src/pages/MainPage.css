@@ -21,6 +21,35 @@
     background-color: #2A2A2A;
 }
 
+#frtxt{
+    min-width: 1vh;
+    resize: none;
+    height:3vh;
+    font-size: 150%;
+    border-radius: 10px;
+    background-color: #4C4C4C;
+    color:#dddddd;
+}
+
+#frbtn{
+    width: 20vh;
+    height: 4vh;
+    background-color: #003049;
+    color: white;
+    margin-top: 1px;
+}
+
+#frbtn:hover{
+    background-color: white;
+    color: #003049;
+    transition-duration: .1s;
+}
+
+#frbtn:active{
+    background-color:#003049;
+    color: white;
+}
+
 #Chat{
     min-width: 163vh;
     border-width: 1px;
