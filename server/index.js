@@ -57,13 +57,6 @@ app.post("/SignIn", (req, res) => {
   );
 });
 
-/*
-app.post("/addFriend", (req, res) => {
-  db.query("SELECT * FROM users WHERE name = ?", [req.friendName])
-  db.query("INSERT INTO friends (id, fid, lastmessage) VALUES(?, ?, ?);", [])
-})
-*/
-
 app.post("/SignUp", (req, res) => {
   console.log("signup!");
   db.query(
@@ -92,12 +85,17 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("verify", (verify) => {
-    console.log(userslist.length);
     for (let i = 0; i < userslist.length; i++) {
       console.log(":" + userslist[i][1] + ":");
       if (userslist[i][1] == verify) {
         console.log(socket.id + " is verified as " + userslist[i][0]);
-        connectedUsers.push([userslist[i][0], socket.id]);
+        db.query(
+          "SELECT * FROM users WHERE name = ?",
+          [userslist[i][0]],
+          (err, result) => {
+            connectedUsers.push([result[0].id, socket.id]);
+          }
+        );
       }
     }
   });
@@ -117,15 +115,28 @@ io.on("connection", (socket) => {
   socket.on("addFriend", (friendName) => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (connectedUsers[1][i] == socket.id) {
-        console.log(connectedUsers[i][0]);
         db.query(
-          "SELECT * FROM users WHERE name = ? OR name = ?",
+          "SELECT * FROM users WHERE id = ? OR name = ?",
           [connectedUsers[i][0], friendName],
           (err, result) => {
             db.query("INSERT INTO friends (id, fid) VALUES(?, ?);", [
               result[0].id,
               result[1].id,
             ]);
+          }
+        );
+      }
+    }
+  });
+
+  socket.on("getFriendsList", () => {
+    for (let i = 0; i < connectedUsers.length; i++) {
+      if (connectedUsers[i][1] == socket.id) {
+        db.query(
+          "SELECT * FROM friends WHERE id = ? OR fid = ?",
+          [connectedUsers[i][0], connectedUsers[i][0]],
+          (err, result) => {
+            socket.emit("FriendsList", result);
           }
         );
       }

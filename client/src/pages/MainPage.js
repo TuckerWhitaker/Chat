@@ -12,8 +12,18 @@ function MainPage() {
   const addFriend = () => {
     console.log(friendName);
     socket.emit("addFriend", friendName);
-    console.log("friend?");
   };
+
+  const getFriendsList = () => {
+    socket.emit("getFriendsList");
+    console.log("getfriends");
+  };
+
+  socket.on("FriendsList", (result) => {
+    for (let i = 0; i < result.length; i++) {
+      console.log(result[i]);
+    }
+  });
 
   const startConnection = () => {
     for (let i = 0; i < document.cookie.length; i++) {
@@ -61,6 +71,13 @@ function MainPage() {
           <textarea id="txt"></textarea>
           <button id="btn" onClick={startConnection()}>
             Send
+          </button>
+          <button
+            onClick={() => {
+              getFriendsList();
+            }}
+          >
+            refresh friends
           </button>
         </div>
       </div>
