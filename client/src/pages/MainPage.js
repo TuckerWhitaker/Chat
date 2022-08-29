@@ -20,8 +20,20 @@ function MainPage() {
   };
 
   socket.on("FriendsList", (result) => {
+    for (
+      let i = 0;
+      i < document.getElementById("FriendsList").children.length;
+      i++
+    ) {
+      document.getElementById("FriendsList").children[i].remove();
+    }
+
     for (let i = 0; i < result.length; i++) {
       console.log(result[i]);
+      const f = document.createElement("button");
+      f.innerHTML = result[i].name;
+      f.className = "FriendItem";
+      document.getElementById("FriendsList").appendChild(f);
     }
   });
 
@@ -56,6 +68,7 @@ function MainPage() {
           >
             Add Friend
           </button>
+          <div id="FriendsList"></div>
         </div>
       </div>
       <div className="container" id="Chat">

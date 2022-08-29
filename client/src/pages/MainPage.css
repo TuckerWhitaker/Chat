@@ -16,9 +16,15 @@
 }
 
 #Friends{
+    display: flex;
     max-width: 30vh;
     min-width: 30vh;
     background-color: #2A2A2A;
+    justify-content: top;
+    flex-direction: column;
+    align-items: center;
+    
+
 }
 
 #frtxt{
@@ -37,6 +43,7 @@
     background-color: #003049;
     color: white;
     margin-top: 1px;
+    margin-bottom: 5px;
 }
 
 #frbtn:hover{
@@ -48,6 +55,27 @@
 #frbtn:active{
     background-color:#003049;
     color: white;
+}
+
+.FriendItem{
+    width: 30vh;
+    height: 5vh;
+    font-size: x-large;
+    background-color: #003049;
+    color: white;
+    border-color: white;
+    border-width: 0px;
+
+}
+
+.FriendItem:hover
+{
+    background-color: #073e5c;
+}
+
+.FriendItem:active
+{
+    background-color: #185c80;
 }
 
 #Chat{

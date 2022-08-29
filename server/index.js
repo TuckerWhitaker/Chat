@@ -86,7 +86,6 @@ io.on("connection", (socket) => {
 
   socket.on("verify", (verify) => {
     for (let i = 0; i < userslist.length; i++) {
-      console.log(":" + userslist[i][1] + ":");
       if (userslist[i][1] == verify) {
         console.log(socket.id + " is verified as " + userslist[i][0]);
         db.query(
@@ -115,6 +114,7 @@ io.on("connection", (socket) => {
   socket.on("addFriend", (friendName) => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (connectedUsers[1][i] == socket.id) {
+        console.log("addFriendFOundId");
         db.query(
           "SELECT * FROM users WHERE id = ? OR name = ?",
           [connectedUsers[i][0], friendName],
@@ -133,7 +133,7 @@ io.on("connection", (socket) => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (connectedUsers[i][1] == socket.id) {
         db.query(
-          "SELECT * FROM friends WHERE id = ? OR fid = ?",
+          "SELECT friends.id, friends.fid, users.name FROM friends INNER JOIN users ON friends.id=users.id WHERE friends.id=? OR friends.fid=?;",
           [connectedUsers[i][0], connectedUsers[i][0]],
           (err, result) => {
             socket.emit("FriendsList", result);
