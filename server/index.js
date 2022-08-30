@@ -129,14 +129,35 @@ io.on("connection", (socket) => {
     }
   });
 
+  GetNameById = (id) => {
+    db.query("SELECT * FROM users WHERE id = ?", [id], (err, result) => {
+      console.log(result[0].name);
+      return result[0].name;
+    });
+  };
+
   socket.on("getFriendsList", () => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (connectedUsers[i][1] == socket.id) {
         db.query(
-          "SELECT friends.id, friends.fid, users.name FROM friends INNER JOIN users ON friends.id=users.id WHERE friends.id=? OR friends.fid=?;",
+          "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
           [connectedUsers[i][0], connectedUsers[i][0]],
           (err, result) => {
-            socket.emit("FriendsList", result);
+            db.query(
+              "CREATE TABLE temp AS SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ?;",
+              [connectedUsers[i][0], connectedUsers[i][0]],
+              (err, result) => {
+                db.query(
+                  "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
+                  (err, result) => {
+                    db.query("DROP TABLE temp");
+                    console.log(result);
+                    socket.emit("FriendsList", result);
+                  }
+                );
+              }
+              //
+            );
           }
         );
       }

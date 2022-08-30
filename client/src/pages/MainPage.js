@@ -20,19 +20,18 @@ function MainPage() {
   };
 
   socket.on("FriendsList", (result) => {
-    for (
-      let i = 0;
-      i < document.getElementById("FriendsList").children.length;
-      i++
-    ) {
-      document.getElementById("FriendsList").children[i].remove();
+    console.log(result.length);
+    let j = document.getElementById("FriendsList").children.length;
+    for (let i = 0; i < j; i++) {
+      document.getElementById("FriendsList").children[0].remove();
     }
 
     for (let i = 0; i < result.length; i++) {
-      console.log(result[i]);
+      console.log(result[i].name + " " + result[i].id + "index: " + i);
       const f = document.createElement("button");
       f.innerHTML = result[i].name;
       f.className = "FriendItem";
+      f.id = result[i].id;
       document.getElementById("FriendsList").appendChild(f);
     }
   });
