@@ -99,8 +99,12 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("message", (message) => {
-    console.log(message);
+  socket.on("SendMessage", (message) => {
+    console.log(message[0]);
+    db.query(
+      "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
+      [GetIdBySocketId(socket.id), message[0], message[1], message[2]]
+    );
   });
 
   socket.on("disconnect", () => {
@@ -135,32 +139,42 @@ io.on("connection", (socket) => {
       return result[0].name;
     });
   };
-
-  socket.on("getFriendsList", () => {
+  GetIdByName = (name) => {
+    db.query("SELECT * FROM users WHERE name = ?", [name], (err, result) => {
+      console.log(result[0].id);
+      return result[0].id;
+    });
+  };
+  GetIdBySocketId = (socketid) => {
     for (let i = 0; i < connectedUsers.length; i++) {
-      if (connectedUsers[i][1] == socket.id) {
-        db.query(
-          "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
-          [connectedUsers[i][0], connectedUsers[i][0]],
-          (err, result) => {
-            db.query(
-              "CREATE TABLE temp AS SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ?;",
-              [connectedUsers[i][0], connectedUsers[i][0]],
-              (err, result) => {
-                db.query(
-                  "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
-                  (err, result) => {
-                    db.query("DROP TABLE temp");
-                    console.log(result);
-                    socket.emit("FriendsList", result);
-                  }
-                );
-              }
-              //
-            );
-          }
-        );
+      if (connectedUsers[i][1] == socketid) {
+        return connectedUsers[i][0];
       }
     }
+  };
+
+  socket.on("getFriendsList", () => {
+    let user = GetIdBySocketId(socket.id);
+    db.query(
+      "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
+      [user, user],
+      (err, result) => {
+        db.query(
+          "CREATE TABLE temp AS SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ?;",
+          [user, user],
+          (err, result) => {
+            db.query(
+              "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
+              (err, result) => {
+                db.query("DROP TABLE temp");
+                console.log(result);
+                socket.emit("FriendsList", result);
+              }
+            );
+          }
+          //
+        );
+      }
+    );
   });
 });

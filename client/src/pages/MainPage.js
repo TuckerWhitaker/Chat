@@ -7,7 +7,9 @@ var socket = io.connect("ws://localhost:3001");
 function MainPage() {
   //
 
+  const [selectedFriendID, SetFriendID] = useState();
   const [friendName, SetfriendName] = useState("");
+  const [message, SetMessage] = useState("");
 
   const addFriend = () => {
     console.log(friendName);
@@ -32,10 +34,34 @@ function MainPage() {
       f.innerHTML = result[i].name;
       f.className = "FriendItem";
       f.id = result[i].id;
+      f.onclick = () => {
+        selectFriend(f.id);
+      };
       document.getElementById("FriendsList").appendChild(f);
     }
   });
 
+  const selectFriend = (id) => {
+    //get old messages from mysql
+    SetFriendID(id);
+  };
+
+  const sendMessage = () => {
+    var today = new Date();
+    var dateTime =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate() +
+      " " +
+      today.getHours() +
+      ":" +
+      today.getMinutes() +
+      ":" +
+      today.getSeconds();
+    socket.emit("SendMessage", [selectedFriendID, message, dateTime]);
+  };
   const startConnection = () => {
     for (let i = 0; i < document.cookie.length; i++) {
       if (document.cookie.substring(i, i + 4) === "uid=") {
@@ -80,8 +106,18 @@ function MainPage() {
         </div>
 
         <div id="inputContainer">
-          <textarea id="txt"></textarea>
-          <button id="btn" onClick={startConnection()}>
+          <textarea
+            id="txt"
+            onChange={(e) => {
+              SetMessage(e.target.value);
+            }}
+          ></textarea>
+          <button
+            id="btn"
+            onClick={() => {
+              sendMessage();
+            }}
+          >
             Send
           </button>
           <button
@@ -91,6 +127,7 @@ function MainPage() {
           >
             refresh friends
           </button>
+          <button onClick={startConnection()}></button>
         </div>
       </div>
     </div>
