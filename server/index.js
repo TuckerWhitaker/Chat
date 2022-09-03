@@ -9,6 +9,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const { createBrotliCompress } = require("zlib");
 const { connected } = require("process");
+const { SocketAddress } = require("net");
 const io = new Server(server, { cors: { origin: "*" } });
 
 const db = mysql.createPool({
@@ -38,8 +39,6 @@ app.post("/SignIn", (req, res) => {
     "SELECT * FROM users WHERE name = ?",
     [req.body.username],
     (err, result) => {
-      console.log(result);
-      console.log(err);
       if (result.length > 0) {
         bcrypt
           .compare(req.body.password, result[0].password)
@@ -49,7 +48,6 @@ app.post("/SignIn", (req, res) => {
               let i = Math.floor(Math.random() * 999999999);
               userslist.push([req.body.username, i]);
               res.send("" + i);
-              console.log(userslist);
             }
           });
       }
@@ -85,6 +83,12 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("verify", (verify) => {
+    for (let i = 0; i < connectedUsers.length; i++) {
+      if (connectedUsers[i][0] == socket.id) {
+        console.log("return");
+        return;
+      }
+    }
     for (let i = 0; i < userslist.length; i++) {
       if (userslist[i][1] == verify) {
         console.log(socket.id + " is verified as " + userslist[i][0]);
@@ -93,14 +97,33 @@ io.on("connection", (socket) => {
           [userslist[i][0]],
           (err, result) => {
             connectedUsers.push([result[0].id, socket.id]);
+            userslist.pop(i);
           }
         );
       }
     }
   });
 
+  /* const Ping = () => {
+    for(let i = 0; i < connectedUsers; i++){
+      if(connectedUsers[i][0])
+    }
+  }*/
+
   socket.on("SendMessage", (message) => {
-    console.log(message[0]);
+    console.log(message[0] + "   " + connectedUsers);
+    for (let i = 0; i < connectedUsers.length; i++) {
+      console.log(connectedUsers[i][0]);
+      if (message[0] == connectedUsers[i][0]) {
+        io.to(connectedUsers[i][1]).emit("recieveMessage", [
+          socket.id,
+          message[1],
+          message[2],
+        ]);
+        console.log("sent message");
+        console.log(connectedUsers);
+      }
+    }
     db.query(
       "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
       [GetIdBySocketId(socket.id), message[0], message[1], message[2]]
@@ -118,7 +141,6 @@ io.on("connection", (socket) => {
   socket.on("addFriend", (friendName) => {
     for (let i = 0; i < connectedUsers.length; i++) {
       if (connectedUsers[1][i] == socket.id) {
-        console.log("addFriendFOundId");
         db.query(
           "SELECT * FROM users WHERE id = ? OR name = ?",
           [connectedUsers[i][0], friendName],
@@ -135,13 +157,11 @@ io.on("connection", (socket) => {
 
   GetNameById = (id) => {
     db.query("SELECT * FROM users WHERE id = ?", [id], (err, result) => {
-      console.log(result[0].name);
       return result[0].name;
     });
   };
   GetIdByName = (name) => {
     db.query("SELECT * FROM users WHERE name = ?", [name], (err, result) => {
-      console.log(result[0].id);
       return result[0].id;
     });
   };
@@ -167,7 +187,6 @@ io.on("connection", (socket) => {
               "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
               (err, result) => {
                 db.query("DROP TABLE temp");
-                console.log(result);
                 socket.emit("FriendsList", result);
               }
             );

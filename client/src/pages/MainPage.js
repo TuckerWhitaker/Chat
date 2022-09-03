@@ -1,5 +1,5 @@
 import { Axios } from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 const { io } = require("socket.io-client");
 var socket = io.connect("ws://localhost:3001");
@@ -62,16 +62,29 @@ function MainPage() {
       today.getSeconds();
     socket.emit("SendMessage", [selectedFriendID, message, dateTime]);
   };
-  const startConnection = () => {
-    for (let i = 0; i < document.cookie.length; i++) {
-      if (document.cookie.substring(i, i + 4) === "uid=") {
-        socket.emit(
-          "verify",
-          document.cookie.substring(i + 4, document.cookie.length)
-        );
+
+  socket.on("recieveMessage", (message) => {
+    let m = document.createElement("div");
+    m.innerHTML = message[1] + "   " + message[0] + "   " + message[2];
+    m.className = "msg";
+    document.getElementById("chatContainer").appendChild(m);
+  });
+
+  const StartConnection = () => {
+    useEffect(() => {
+      for (let i = 0; i < document.cookie.length; i++) {
+        if (document.cookie.substring(i, i + 4) === "uid=") {
+          console.log(document.cookie.substring(i + 4, document.cookie.length));
+          socket.emit(
+            "verify",
+            document.cookie.substring(i + 4, document.cookie.length)
+          );
+        }
       }
-    }
+    }, []);
   };
+
+  document.onreadystatechange = StartConnection();
 
   return (
     <div className="Parent">
@@ -127,7 +140,6 @@ function MainPage() {
           >
             refresh friends
           </button>
-          <button onClick={startConnection()}></button>
         </div>
       </div>
     </div>
