@@ -1,4 +1,4 @@
-import { Axios } from "axios";
+import axios, { Axios } from "axios";
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 const { io } = require("socket.io-client");
@@ -7,6 +7,7 @@ var socket = io.connect("ws://localhost:3001");
 function MainPage() {
   //
 
+  let hasrun = false;
   const [selectedFriendID, SetFriendID] = useState();
   const [friendName, SetfriendName] = useState("");
   const [message, SetMessage] = useState("");
@@ -60,6 +61,7 @@ function MainPage() {
       today.getMinutes() +
       ":" +
       today.getSeconds();
+
     socket.emit("SendMessage", [selectedFriendID, message, dateTime]);
   };
 
@@ -70,21 +72,27 @@ function MainPage() {
     document.getElementById("chatContainer").appendChild(m);
   });
 
-  const StartConnection = () => {
-    useEffect(() => {
-      for (let i = 0; i < document.cookie.length; i++) {
-        if (document.cookie.substring(i, i + 4) === "uid=") {
-          console.log(document.cookie.substring(i + 4, document.cookie.length));
-          socket.emit(
-            "verify",
-            document.cookie.substring(i + 4, document.cookie.length)
-          );
-        }
-      }
-    }, []);
-  };
+  function delay(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
 
-  document.onreadystatechange = StartConnection();
+  async function startconnect() {
+    //wait random time then send verify, kinda dumb but it works, ill fix later
+    console.log("start timer");
+    await delay(Math.random() * 1000);
+    console.log("after 1 second");
+    for (let i = 0; i < document.cookie.length; i++) {
+      if (document.cookie.substring(i, i + 4) === "uid=") {
+        console.log(document.cookie.substring(i + 4, document.cookie.length));
+        socket.emit(
+          "verify",
+          document.cookie.substring(i + 4, document.cookie.length)
+        );
+      }
+    }
+  }
+
+  startconnect();
 
   return (
     <div className="Parent">

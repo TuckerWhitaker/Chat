@@ -35,6 +35,13 @@ app.get("/", (req, res) => {
 });
 
 app.post("/SignIn", (req, res) => {
+  for (let i = 0; i < userslist; i++) {
+    if (req.body.username == userslist[i][0]) {
+      userslist.splice(i, 1);
+      console.log("splice cause repeat: " + userslist);
+    }
+  }
+
   db.query(
     "SELECT * FROM users WHERE name = ?",
     [req.body.username],
@@ -83,12 +90,6 @@ io.on("connection", (socket) => {
   console.log(socket.id);
 
   socket.on("verify", (verify) => {
-    for (let i = 0; i < connectedUsers.length; i++) {
-      if (connectedUsers[i][0] == socket.id) {
-        console.log("return");
-        return;
-      }
-    }
     for (let i = 0; i < userslist.length; i++) {
       if (userslist[i][1] == verify) {
         console.log(socket.id + " is verified as " + userslist[i][0]);
@@ -97,18 +98,12 @@ io.on("connection", (socket) => {
           [userslist[i][0]],
           (err, result) => {
             connectedUsers.push([result[0].id, socket.id]);
-            userslist.pop(i);
+            userslist.splice(i, 1);
           }
         );
       }
     }
   });
-
-  /* const Ping = () => {
-    for(let i = 0; i < connectedUsers; i++){
-      if(connectedUsers[i][0])
-    }
-  }*/
 
   socket.on("SendMessage", (message) => {
     console.log(message[0] + "   " + connectedUsers);
@@ -133,8 +128,10 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("user disconnected");
     for (let i = 0; i < connectedUsers.length; i++) {
-      if (socket.id == connectedUsers[i][0]) connectedUsers.pop(i);
-      console.log("removed " + socket.id + " From connectedUsers");
+      if (socket.id == connectedUsers[i][0]) {
+        connectedUsers.pop(i);
+        console.log("removed " + socket.id + " From connectedUsers");
+      }
     }
   });
 
