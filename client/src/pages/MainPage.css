@@ -107,9 +107,38 @@
 }
 
 .msg{
-    width: 250px;
+    width: 163.3vh;
     height: 50px;
+    font-size: large;
 }
+.msg:hover{
+   background-color:#4C4C4C;
+}
+
+.Cinfo{
+    display: flex;
+    margin-top: 10px;
+    font-size: medium;
+    color:#8D918D;
+}
+
+.Cname{
+    margin-right: 10px;
+    font-size: large;
+    color:#bdbdbd;
+    font-weight: 500;
+}
+
+.Cdate{
+    font-size: small;
+}
+
+.Cmessage{
+    font-size:large;
+    margin-bottom: 100px;
+}
+
+
 
 #inputContainer{
     min-width: 50vh;

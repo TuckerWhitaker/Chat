@@ -10,6 +10,7 @@ const { Server } = require("socket.io");
 const { createBrotliCompress } = require("zlib");
 const { connected } = require("process");
 const { SocketAddress } = require("net");
+const { time } = require("console");
 const io = new Server(server, { cors: { origin: "*" } });
 
 const db = mysql.createPool({
@@ -85,6 +86,50 @@ app.post("/SignUp", (req, res) => {
   );
 });
 
+app.post("/GetMessages", (req, res) => {
+  db.query(
+    "SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? UNION SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? ORDER BY time; ",
+    [
+      GetIdBySocketId(req.body.Uid),
+      req.body.Fid,
+      req.body.Fid,
+      GetIdBySocketId(req.body.Uid),
+    ],
+    (err, result) => {
+      let newresult = [];
+      let author = "";
+      let author1 = "";
+      let author2 = "";
+      db.query(
+        "SELECT * FROM users WHERE id = ? OR id = ?",
+        [GetIdBySocketId(req.body.Uid), req.body.Fid],
+        (error, res2) => {
+          for (let i = 0; i < res2.length; i++) {
+            if (res2[i].id == GetIdBySocketId(req.body.Uid)) {
+              author1 = res2[i].name;
+            } else {
+              author2 = res2[i].name;
+            }
+          }
+
+          for (let i = 0; i < result.length; i++) {
+            if (result[i].authorid == GetIdBySocketId(req.body.Uid)) {
+              author = author1;
+            } else {
+              author = author2;
+            }
+            let timestr = "" + result[i].time;
+            timestr = timestr.slice(0, 24);
+            newresult.push([author, result[i].message, timestr]);
+          }
+          res.send([newresult]);
+          console.log("Sent archived messages");
+        }
+      );
+    }
+  );
+});
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   console.log(socket.id);
@@ -105,24 +150,50 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("SendMessage", (message) => {
-    console.log(message[0] + "   " + connectedUsers);
-    for (let i = 0; i < connectedUsers.length; i++) {
-      console.log(connectedUsers[i][0]);
-      if (message[0] == connectedUsers[i][0]) {
-        io.to(connectedUsers[i][1]).emit("recieveMessage", [
-          socket.id,
-          message[1],
-          message[2],
-        ]);
-        console.log("sent message");
-        console.log(connectedUsers);
-      }
+  socket.on("SelectRoom", (room) => {
+    if (room < GetIdBySocketId(socket.id)) {
+      socket.join(room + ":" + GetIdBySocketId(socket.id));
+    } else {
+      socket.join(GetIdBySocketId(socket.id) + ":" + room);
     }
-    db.query(
-      "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
-      [GetIdBySocketId(socket.id), message[0], message[1], message[2]]
-    );
+  });
+
+  let lastmessage = [];
+
+  socket.on("SendMessage", (message) => {
+    console.log("new message");
+    if (message == lastmessage) {
+      console.log("repeatmessage");
+    } else {
+      lastmessage = message;
+      console.log(lastmessage);
+      console.log(message[0] + "   " + connectedUsers);
+      db.query(
+        "SELECT * FROM users WHERE id = ?",
+        GetIdBySocketId(socket.id),
+        (err, result) => {
+          if (message[0] < GetIdBySocketId(socket.id)) {
+            io.to(message[0] + ":" + GetIdBySocketId(socket.id)).emit(
+              "recieveMessage",
+              [result[0].name, message[1], message[2]]
+            );
+            console.log("sent a message");
+          } else {
+            io.to(GetIdBySocketId(socket.id) + ":" + message[0]).emit(
+              "recieveMessage",
+              [result[0].name, message[1], message[2]]
+            );
+            console.log("sent a message");
+          }
+          console.log("sent message");
+
+          db.query(
+            "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
+            [GetIdBySocketId(socket.id), message[0], message[1], message[2]]
+          );
+        }
+      );
+    }
   });
 
   socket.on("disconnect", () => {
@@ -153,13 +224,13 @@ io.on("connection", (socket) => {
   });
 
   GetNameById = (id) => {
-    db.query("SELECT * FROM users WHERE id = ?", [id], (err, result) => {
+    db.query("SELECT * FROM users WHERE id = ?", "" + id, (err, result) => {
       return result[0].name;
     });
   };
   GetIdByName = (name) => {
     db.query("SELECT * FROM users WHERE name = ?", [name], (err, result) => {
-      return result[0].id;
+      return "" + result[0].id;
     });
   };
   GetIdBySocketId = (socketid) => {

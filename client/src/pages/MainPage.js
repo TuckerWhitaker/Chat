@@ -4,13 +4,49 @@ import "./MainPage.css";
 const { io } = require("socket.io-client");
 var socket = io.connect("ws://localhost:3001");
 
+function delay(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+const createMessage = (message) => {
+  let m = document.createElement("div");
+  let mChild = document.createElement("div");
+  mChild.className = "Cinfo";
+  m.appendChild(mChild);
+  let mChild2 = document.createElement("div");
+  mChild2.className = "Cmessage";
+  m.appendChild(mChild2);
+
+  let namediv = document.createElement("div");
+  let datediv = document.createElement("div");
+  namediv.className = "Cname";
+  datediv.className = "Cdate";
+  mChild.appendChild(namediv);
+  mChild.appendChild(datediv);
+
+  namediv.innerHTML = message[0];
+  datediv.innerHTML = message[2];
+  mChild2.innerHTML = message[1];
+  m.className = "msg";
+  document.getElementById("chatContainer").appendChild(m);
+};
+
+socket.on("recieveMessage", (message) => {
+  console.log(message);
+  createMessage(message);
+});
+
 function MainPage() {
   //
 
-  let hasrun = false;
   const [selectedFriendID, SetFriendID] = useState();
   const [friendName, SetfriendName] = useState("");
   const [message, SetMessage] = useState("");
+
+  socket.on("connect", () => {
+    console.log("OnConnect");
+    startconnect();
+  });
 
   const addFriend = () => {
     console.log(friendName);
@@ -44,7 +80,25 @@ function MainPage() {
 
   const selectFriend = (id) => {
     //get old messages from mysql
+
+    let parent = document.getElementById("chatContainer");
+    while (parent.firstChild) {
+      parent.removeChild(parent.firstChild);
+    }
+
+    axios
+      .post("http://localhost:3001/GetMessages", {
+        Uid: socket.id,
+        Fid: id,
+      })
+      .then((response) => {
+        console.log(response);
+        for (let i = 0; i < response.data[0].length; i++) {
+          createMessage(response.data[0][i]);
+        }
+      });
     SetFriendID(id);
+    socket.emit("SelectRoom", id);
   };
 
   const sendMessage = () => {
@@ -65,22 +119,15 @@ function MainPage() {
     socket.emit("SendMessage", [selectedFriendID, message, dateTime]);
   };
 
-  socket.on("recieveMessage", (message) => {
-    let m = document.createElement("div");
-    m.innerHTML = message[1] + "   " + message[0] + "   " + message[2];
-    m.className = "msg";
-    document.getElementById("chatContainer").appendChild(m);
-  });
+  async function SendMessage() {
+    await delay(Math.random() * 1000);
 
-  function delay(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
+    sendMessage();
   }
 
   async function startconnect() {
     //wait random time then send verify, kinda dumb but it works, ill fix later
-    console.log("start timer");
     await delay(Math.random() * 1000);
-    console.log("after 1 second");
     for (let i = 0; i < document.cookie.length; i++) {
       if (document.cookie.substring(i, i + 4) === "uid=") {
         console.log(document.cookie.substring(i + 4, document.cookie.length));
@@ -91,8 +138,6 @@ function MainPage() {
       }
     }
   }
-
-  startconnect();
 
   return (
     <div className="Parent">
@@ -136,7 +181,7 @@ function MainPage() {
           <button
             id="btn"
             onClick={() => {
-              sendMessage();
+              SendMessage();
             }}
           >
             Send
