@@ -136,31 +136,25 @@ function MainPage() {
   }
 
   return (
-    <div className="Parent">
-      <meta
-        name="viewport"
-        content="width=device-width, height=device-height, initial-scale=.5"
-      ></meta>
+    <div className="Parent" id="parent">
       <div className="container" id="Friends">
-        <div>
-          <input
-            type="text"
-            placeholder="Friend's name"
-            id="frtxt"
-            onChange={(e) => {
-              SetfriendName(e.target.value);
-            }}
-          ></input>
-          <button
-            id="frbtn"
-            onClick={() => {
-              addFriend();
-            }}
-          >
-            Add Friend
-          </button>
-          <div id="FriendsList"></div>
-        </div>
+        <input
+          type="text"
+          placeholder="Friend's name"
+          id="frtxt"
+          onChange={(e) => {
+            SetfriendName(e.target.value);
+          }}
+        ></input>
+        <button
+          id="frbtn"
+          onClick={() => {
+            addFriend();
+          }}
+        >
+          Add Friend
+        </button>
+        <div id="FriendsList"></div>
       </div>
       <div className="container" id="Chat">
         <div id="chatHeader">

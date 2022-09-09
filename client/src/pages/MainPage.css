@@ -1,23 +1,22 @@
 @media only screen and (max-width: 1000px){
-    .container{
-        color: white;
-        border-width: 1px;
-        border-color: #4C4C4C;
-        border-style: solid;
-        min-width: 90vh;
-        min-height: 99.5vh;
+    #parent{
+        min-width: 100vw;
+        max-width: 100vw;
     }
+    #Friends{
+        max-width: 15%;
+        min-width: 15%;
+    }
+
 }
 
 
 
 .Parent{
-    display: flex;
-    align-items:flex-start;
-    min-height: 100vh;
-    min-width: 100vw;
+    width: 100.1vw;
+    height: 100vh;
     background: #2A2A2A;
-    flex-direction: row;
+    display: flex;
 }
 
 .container{
@@ -25,41 +24,37 @@
     border-width: 1px;
     border-color: #4C4C4C;
     border-style: solid;
-    min-width: 90vh;
-    min-height: 99.5vh;
 }
 
 #Friends{
     display: flex;
-    max-width: 30vh;
-    min-width: 30vh;
-    min-height: 90vh;
-    max-height: 90vh;
+    width: 10%;
+    height: 99%;
     background-color: #2A2A2A;
     justify-content: top;
     flex-direction: column;
     align-items: center;
-    
-
 }
 
 #frtxt{
-    min-width: 1vh;
+    width: 100%;
     resize: none;
-    height:3vh;
-    font-size: 150%;
-    border-radius: 10px;
+    height:3%;
+    font-size: 75%;
+    border-radius: 10%;
     background-color: #4C4C4C;
     color:#dddddd;
+    text-align: center;
 }
 
 #frbtn{
-    width: 20vh;
-    height: 4vh;
+    width: 100%;
+    height: 5vh;
     background-color: #003049;
     color: white;
     margin-top: 1px;
     margin-bottom: 5px;
+    font-size: 100%;
 }
 
 #frbtn:hover{
@@ -74,14 +69,18 @@
 }
 
 .FriendItem{
-    width: 30vh;
+    width: 100%;
     height: 5vh;
-    font-size: x-large;
+    font-size: 100%;
     background-color: #003049;
     color: white;
     border-color: white;
     border-width: 0px;
+}
 
+#FriendsList{
+    height: 100%;
+    width: 100%;
 }
 
 .FriendItem:hover
@@ -95,16 +94,16 @@
 }
 
 #Chat{
-    min-width: 163vh;
+    height: 100%;
+    width: 100%;
     border-width: 1px;
     border-color: #4C4C4C;
     border-style: solid;
 }
 
-
 #chatHeader{
-    min-width: 50vh;
-    min-height:10vh;
+    width: 100%;
+    height: 10%;
     background-color:#2A2A2A;
     border-bottom-color: #8D918D;
     border-bottom-width: 3px;
@@ -116,15 +115,15 @@
 }
 
 #chatContainer{
-    min-width: 50vh;
-    height:80vh;
+    width: 100%;
+    height:80%;
     background-color:#2A2A2A;
     overflow: auto;
     text-align:justify;
 }
 
 .msg{
-    width: 163.3vh;
+    width: 100%;
     height: 50px;
     font-size: large;
 }
@@ -158,9 +157,8 @@
 
 
 #inputContainer{
-    min-width: 50vh;
-    min-height:9vh;
-    
+    width: 100%;
+    height: 9%;
     background-color:#2A2A2A;
     border-width: 1px;
     border-color: #4C4C4C;
@@ -170,10 +168,10 @@
 }
 
 #txt{
-    min-width: 145vh;
+    width: 80%;
     resize: none;
-    height:8vh;
-    font-size: 150%;
+    height: 90%;
+    font-size: 100%;
     border-radius: 10px;
     background-color: #4C4C4C;
     color:#dddddd;
@@ -181,8 +179,8 @@
 }
 
 #btn{
-    width: 100vh;
-    height: 9vh;
+    width: 20%;
+    height: 50%;
     background-color: #003049;
     color: white;
 
