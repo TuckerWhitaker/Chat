@@ -35,8 +35,16 @@ socket.on("recieveMessage", (message) => {
   createMessage(message);
 });
 
+document.addEventListener("keyup", function (event) {
+  if (event.code === "Enter") {
+    console.log("enter");
+    //SendMessage();
+  }
+});
+
 function MainPage() {
   //
+
   const [selectedFriendID, SetFriendID] = useState();
   const [friendName, SetfriendName] = useState("");
   const [message, SetMessage] = useState("");
@@ -113,6 +121,7 @@ function MainPage() {
       today.getSeconds();
 
     socket.emit("SendMessage", [selectedFriendID, message, dateTime]);
+    document.getElementById("txt").value = "";
   };
 
   async function SendMessage() {
@@ -120,6 +129,8 @@ function MainPage() {
 
     sendMessage();
   }
+
+  MainPage.SendMessage = SendMessage;
 
   async function startconnect() {
     //wait random time then send verify, kinda dumb but it works, ill fix later
@@ -172,18 +183,17 @@ function MainPage() {
               SetMessage(e.target.value);
             }}
           ></textarea>
-          <button
-            id="btn"
-            onClick={() => {
-              SendMessage();
-            }}
-          >
-            Send
-          </button>
         </div>
       </div>
     </div>
   );
 }
+
+document.addEventListener("keyup", function (event) {
+  if (event.code === "Enter") {
+    console.log("enter");
+    MainPage.SendMessage();
+  }
+});
 
 export default MainPage;

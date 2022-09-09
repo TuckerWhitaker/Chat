@@ -168,10 +168,10 @@
 }
 
 #txt{
-    width: 80%;
+    width: 100%;
     resize: none;
     height: 90%;
-    font-size: 100%;
+    font-size: 150%;
     border-radius: 10px;
     background-color: #4C4C4C;
     color:#dddddd;

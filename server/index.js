@@ -159,29 +159,26 @@ io.on("connection", (socket) => {
   });
 
   socket.on("SendMessage", (message) => {
-    console.log("new message");
-
     lastmessage = message;
-    console.log(lastmessage);
-    console.log(message[0] + "   " + connectedUsers);
+
     db.query(
       "SELECT * FROM users WHERE id = ?",
       GetIdBySocketId(socket.id),
       (err, result) => {
+        if (result == undefined) {
+          return;
+        }
         if (message[0] < GetIdBySocketId(socket.id)) {
           io.to(message[0] + ":" + GetIdBySocketId(socket.id)).emit(
             "recieveMessage",
             [result[0].name, message[1], message[2]]
           );
-          console.log("sent a message");
         } else {
           io.to(GetIdBySocketId(socket.id) + ":" + message[0]).emit(
             "recieveMessage",
             [result[0].name, message[1], message[2]]
           );
-          console.log("sent a message");
         }
-        console.log("sent message");
 
         db.query(
           "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
