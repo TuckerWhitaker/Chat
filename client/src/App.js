@@ -7,7 +7,7 @@ import SignUp from "./pages/signUpPage";
 function App() {
   return (
     <div className="App">
-      <Router>
+      <Router basename="/Chat">
         <Routes>
           <Route exact path="/main" element={<MainPage />} />
           <Route path="/signup" element={<SignUp />} />
