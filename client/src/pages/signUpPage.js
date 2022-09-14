@@ -7,7 +7,7 @@ function SignUpPage() {
   const [password, Setpassword] = useState("");
 
   const signUp = () => {
-    Axios.post("http://localhost:3001/SignUp", {
+    Axios.post("https://whitakert.com/Chat/API/SignUp", {
       username: userName,
       password: password,
     }).then((response) => {

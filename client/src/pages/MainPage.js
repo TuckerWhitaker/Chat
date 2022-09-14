@@ -2,7 +2,7 @@ import axios, { Axios } from "axios";
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 const { io } = require("socket.io-client");
-var socket = io.connect("ws://localhost:3001");
+var socket = io.connect("ws://whitakert.com/Chat/API:3001");
 
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -88,7 +88,7 @@ function MainPage() {
     }
 
     axios
-      .post("http://localhost:3001/GetMessages", {
+      .post("https://whitakert.com/Chat/API/GetMessages", {
         Uid: socket.id,
         Fid: id,
       })
@@ -99,9 +99,11 @@ function MainPage() {
       });
 
     SetFriendID(id);
-    axios.post("http://localhost:3001/getName", { id }).then((response) => {
-      document.getElementById("GroupName").innerHTML = response.data[0].name;
-    });
+    axios
+      .post("https://whitakert.com/Chat/API/getName", { id })
+      .then((response) => {
+        document.getElementById("GroupName").innerHTML = response.data[0].name;
+      });
     socket.emit("SelectRoom", id);
   };
 

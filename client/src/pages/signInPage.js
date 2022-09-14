@@ -7,14 +7,14 @@ function SignInPage() {
   const [password, Setpassword] = useState("");
 
   const signIn = () => {
-    Axios.post("http://localhost:3001/SignIn", {
+    Axios.post("https://whitakert.com/Chat/API/SignIn", {
       username: userName,
       password: password,
     }).then((response) => {
       if (response.data !== null) {
         document.cookie = "uid=" + response.data;
         console.log(document.cookie);
-        window.location.replace("http://localhost:3000/main");
+        window.location.replace("https://whitakert.com/Chat/main");
       }
     });
   };

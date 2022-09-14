@@ -7,9 +7,9 @@ const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const { createBrotliCompress } = require("zlib");
-const { connected } = require("process");
-const { SocketAddress } = require("net");
+//const { createBrotliCompress } = require("zlib");
+//const { connected } = require("process");
+//const { SocketAddress } = require("net");
 const { time } = require("console");
 const io = new Server(server, { cors: { origin: "*" } });
 
