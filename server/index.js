@@ -1,11 +1,11 @@
 const bodyParser = require("body-parser");
 const cors = require("cors");
-var http = require("http");
+var https = require("https");
 var express = require("express");
 var app = express();
 const mysql = require("mysql");
 const bcrypt = require("bcrypt");
-const server = http.createServer(app);
+const server = https.createServer(app);
 const { Server } = require("socket.io");
 //const { createBrotliCompress } = require("zlib");
 //const { connected } = require("process");
