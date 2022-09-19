@@ -133,7 +133,6 @@ app.post("/GetMessages", (req, res) => {
 io.on("connection", (socket) => {
   console.log("a user connected");
   console.log(socket.id);
-
   socket.on("verify", (verify) => {
     for (let i = 0; i < userslist.length; i++) {
       if (userslist[i][1] == verify) {
