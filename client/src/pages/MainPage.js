@@ -2,8 +2,8 @@ import axios, { Axios } from "axios";
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 const { io } = require("socket.io-client");
-var socket = io.connect("wss://whitakert.com:443/Chat/wss");
-
+var socket = io.connect("wss://whitakert.com:443");
+console.log(socket);
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
