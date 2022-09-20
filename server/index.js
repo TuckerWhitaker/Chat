@@ -47,7 +47,7 @@ app.post("/SignIn", (req, res) => {
     "SELECT * FROM users WHERE name = ?",
     [req.body.username],
     (err, result) => {
-      if (result.length > 0) {
+      if (result) {
         bcrypt
           .compare(req.body.password, result[0].password)
           .then(function (result) {
@@ -69,7 +69,7 @@ app.post("/SignUp", (req, res) => {
     "SELECT * FROM users WHERE name = ?",
     [req.body.username],
     (err, result) => {
-      if (result.length > 0) {
+      if (result) {
         //name is taken
       } else {
         bcrypt.genSalt(10, function (err, salt) {
