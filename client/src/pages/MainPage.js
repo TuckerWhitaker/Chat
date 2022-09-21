@@ -2,8 +2,8 @@ import axios, { Axios } from "axios";
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
 const { io } = require("socket.io-client");
-//var socket = io("wss://whitakert.com:443/wss");
-var socket = new WebSocket("wss://whitakert.com:443/wss");
+var socket = io("wss://whitakert.com:443/wss");
+//var websocket = new WebSocket("wss://whitakert.com:443/wss");
 //
 console.log(socket);
 function delay(time) {
