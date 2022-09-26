@@ -1,5 +1,5 @@
 @media only screen and (max-width: 1000px){
-    #parent{
+    #Mparent{
         min-width: 100vw;
         max-width: 100vw;
     }
@@ -12,11 +12,12 @@
 
 
 
-.Parent{
+.MParent{
     width: 100.1vw;
     height: 100vh;
     background: #2A2A2A;
     display: flex;
+    flex-direction: row;
 }
 
 .container{

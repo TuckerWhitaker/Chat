@@ -199,7 +199,7 @@ io.on("connection", (socket) => {
 
   socket.on("addFriend", (friendName) => {
     for (let i = 0; i < connectedUsers.length; i++) {
-      if (connectedUsers[1][i] == socket.id) {
+      if (connectedUsers[i][1] == socket.id) {
         db.query(
           "SELECT * FROM users WHERE id = ? OR name = ?",
           [connectedUsers[i][0], friendName],

@@ -150,7 +150,7 @@ function MainPage() {
   }
 
   return (
-    <div className="Parent" id="parent">
+    <div className="MParent" id="Mparent">
       <div className="container" id="Friends">
         <input
           type="text"
