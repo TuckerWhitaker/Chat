@@ -29,7 +29,6 @@ server.listen(3001);
 console.log("server running on port 3001");
 
 let userslist = [];
-let connectedUsers = [];
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
@@ -141,7 +140,7 @@ io.on("connection", (socket) => {
           "SELECT * FROM users WHERE name = ?",
           [userslist[i][0]],
           (err, result) => {
-            connectedUsers.push([result[0].id, socket.id]);
+            socket.data.UID = result[0].id;
             userslist.splice(i, 1);
           }
         );
@@ -189,29 +188,22 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
-    for (let i = 0; i < connectedUsers.length; i++) {
-      if (socket.id == connectedUsers[i][0]) {
-        connectedUsers.pop(i);
-        console.log("removed " + socket.id + " From connectedUsers");
-      }
-    }
   });
 
   socket.on("addFriend", (friendName) => {
-    for (let i = 0; i < connectedUsers.length; i++) {
-      if (connectedUsers[i][1] == socket.id) {
-        db.query(
-          "SELECT * FROM users WHERE id = ? OR name = ?",
-          [connectedUsers[i][0], friendName],
-          (err, result) => {
-            db.query("INSERT INTO friends (id, fid) VALUES(?, ?);", [
-              result[0].id,
-              result[1].id,
-            ]);
-          }
+    db.query(
+      "SELECT * FROM users WHERE id = ? OR name = ?",
+      [socket.data.UID, friendName],
+      (err, result) => {
+        console.log(
+          result[0].name + " and " + result[1].name + " are now friends!"
         );
+        db.query("INSERT INTO friends (id, fid) VALUES(?, ?);", [
+          result[0].id,
+          result[1].id,
+        ]);
       }
-    }
+    );
   });
 
   GetNameById = (id) => {
@@ -224,13 +216,14 @@ io.on("connection", (socket) => {
       return "" + result[0].id;
     });
   };
-  GetIdBySocketId = (socketid) => {
-    for (let i = 0; i < connectedUsers.length; i++) {
-      if (connectedUsers[i][1] == socketid) {
-        return connectedUsers[i][0];
+  async function GetIdBySocketId(socketid) {
+    const sockets = await io.fetchSockets();
+    for (let i = 0; i < socket.adapter.sids.size; i++) {
+      if (sockets[i].id == socketid) {
+        return sockets[i].data.UID;
       }
     }
-  };
+  }
 
   app.post("/getName", (req, res) => {
     db.query(
