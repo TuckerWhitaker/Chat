@@ -139,6 +139,7 @@ io.on("connection", (socket) => {
           (err, result) => {
             socket.UID = result[0].id;
             userslist.splice(i, 1);
+            socket.emit("verified");
           }
         );
       }

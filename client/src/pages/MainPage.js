@@ -62,6 +62,10 @@ function MainPage() {
     socket.emit("getFriendsList");
   };
 
+  socket.on("verified", () => {
+    getFriendsList();
+  });
+
   socket.on("FriendsList", (result) => {
     let j = document.getElementById("FriendsList").children.length;
     for (let i = 0; i < j; i++) {
@@ -140,12 +144,10 @@ function MainPage() {
     await delay(Math.random() * 1000);
     for (let i = 0; i < document.cookie.length; i++) {
       if (document.cookie.substring(i, i + 4) === "uid=") {
-        socket
-          .emit(
-            "verify",
-            document.cookie.substring(i + 4, document.cookie.length)
-          )
-          .then(getFriendsList());
+        socket.emit(
+          "verify",
+          document.cookie.substring(i + 4, document.cookie.length)
+        );
       }
     }
   }
