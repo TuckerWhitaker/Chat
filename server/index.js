@@ -86,47 +86,44 @@ app.post("/SignUp", (req, res) => {
 });
 
 app.post("/GetMessages", (req, res) => {
-  db.query(
-    "SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? UNION SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? ORDER BY time; ",
-    [
-      GetIdBySocketId(req.body.Uid),
-      req.body.Fid,
-      req.body.Fid,
-      GetIdBySocketId(req.body.Uid),
-    ],
-    (err, result) => {
-      let newresult = [];
-      let author = "";
-      let author1 = "";
-      let author2 = "";
-      db.query(
-        "SELECT * FROM users WHERE id = ? OR id = ?",
-        [GetIdBySocketId(req.body.Uid), req.body.Fid],
-        (error, res2) => {
-          for (let i = 0; i < res2.length; i++) {
-            if (res2[i].id == GetIdBySocketId(req.body.Uid)) {
-              author1 = res2[i].name;
-            } else {
-              author2 = res2[i].name;
+  GetIdBySocketId(socket.id).then((SocketID) => {
+    db.query(
+      "SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? UNION SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? ORDER BY time; ",
+      [SocketID, req.body.Fid, req.body.Fid, SocketID],
+      (err, result) => {
+        let newresult = [];
+        let author = "";
+        let author1 = "";
+        let author2 = "";
+        db.query(
+          "SELECT * FROM users WHERE id = ? OR id = ?",
+          [SocketID, req.body.Fid],
+          (error, res2) => {
+            for (let i = 0; i < res2.length; i++) {
+              if (res2[i].id == SocketID) {
+                author1 = res2[i].name;
+              } else {
+                author2 = res2[i].name;
+              }
             }
-          }
 
-          for (let i = 0; i < result.length; i++) {
-            if (result[i].authorid == GetIdBySocketId(req.body.Uid)) {
-              author = author1;
-            } else {
-              author = author2;
+            for (let i = 0; i < result.length; i++) {
+              if (result[i].authorid == SocketID) {
+                author = author1;
+              } else {
+                author = author2;
+              }
+              let timestr = "" + result[i].time;
+              timestr = timestr.slice(0, 24);
+              newresult.push([author, result[i].message, timestr]);
             }
-            let timestr = "" + result[i].time;
-            timestr = timestr.slice(0, 24);
-            newresult.push([author, result[i].message, timestr]);
+            res.send([newresult]);
+            console.log("Sent archived messages");
           }
-          res.send([newresult]);
-          console.log("Sent archived messages");
-        }
-      );
-    }
-  );
+        );
+      }
+    );
+  });
 });
 
 io.on("connection", (socket) => {
@@ -149,41 +146,43 @@ io.on("connection", (socket) => {
   });
 
   socket.on("SelectRoom", (room) => {
-    if (room < GetIdBySocketId(socket.id)) {
-      socket.join(room + ":" + GetIdBySocketId(socket.id));
-    } else {
-      socket.join(GetIdBySocketId(socket.id) + ":" + room);
-    }
+    GetIdBySocketId(socket.id).then((SocketID) => {
+      if (room < SocketID) {
+        socket.join(room + ":" + SocketID);
+      } else {
+        socket.join(SocketID + ":" + room);
+      }
+    });
   });
 
   socket.on("SendMessage", (message) => {
     lastmessage = message;
 
-    db.query(
-      "SELECT * FROM users WHERE id = ?",
-      GetIdBySocketId(socket.id),
-      (err, result) => {
+    GetIdBySocketId(socket.id).then((SocketID) => {
+      db.query("SELECT * FROM users WHERE id = ?", SocketID, (err, result) => {
         if (result == undefined) {
           return;
         }
-        if (message[0] < GetIdBySocketId(socket.id)) {
-          io.to(message[0] + ":" + GetIdBySocketId(socket.id)).emit(
-            "recieveMessage",
-            [result[0].name, message[1], message[2]]
-          );
+        if (message[0] < SocketID) {
+          io.to(message[0] + ":" + SocketID).emit("recieveMessage", [
+            result[0].name,
+            message[1],
+            message[2],
+          ]);
         } else {
-          io.to(GetIdBySocketId(socket.id) + ":" + message[0]).emit(
-            "recieveMessage",
-            [result[0].name, message[1], message[2]]
-          );
+          io.to(SocketID + ":" + message[0]).emit("recieveMessage", [
+            result[0].name,
+            message[1],
+            message[2],
+          ]);
         }
 
         db.query(
           "INSERT INTO messages (authorid, recipientid, message, time) VALUES (?,?,?,?)",
-          [GetIdBySocketId(socket.id), message[0], message[1], message[2]]
+          [SocketID, message[0], message[1], message[2]]
         );
-      }
-    );
+      });
+    });
   });
 
   socket.on("disconnect", () => {
@@ -217,12 +216,13 @@ io.on("connection", (socket) => {
     });
   };
   async function GetIdBySocketId(socketid) {
-    const sockets = await io.fetchSockets();
-    for (let i = 0; i < socket.adapter.sids.size; i++) {
-      if (sockets[i].id == socketid) {
-        return sockets[i].data.UID;
-      }
-    }
+    return new Promise((res, rej) => {
+      io.in(socketid)
+        .fetchSockets()
+        .then((sockets) => {
+          res(sockets.data.UID);
+        });
+    });
   }
 
   app.post("/getName", (req, res) => {
@@ -236,26 +236,27 @@ io.on("connection", (socket) => {
   });
 
   socket.on("getFriendsList", () => {
-    let user = GetIdBySocketId(socket.id);
-    db.query(
-      "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
-      [user, user],
-      (err, result) => {
-        db.query(
-          "CREATE TABLE temp AS SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ?;",
-          [user, user],
-          (err, result) => {
-            db.query(
-              "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
-              (err, result) => {
-                db.query("DROP TABLE temp");
-                socket.emit("FriendsList", result);
-              }
-            );
-          }
-          //
-        );
-      }
-    );
+    GetIdBySocketId(socket.id).then((user) => {
+      db.query(
+        "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
+        [user, user],
+        (err, result) => {
+          db.query(
+            "CREATE TABLE temp AS SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ?;",
+            [user, user],
+            (err, result) => {
+              db.query(
+                "SELECT users.name, users.id FROM users JOIN temp ON temp.id=users.id;",
+                (err, result) => {
+                  db.query("DROP TABLE temp");
+                  socket.emit("FriendsList", result);
+                }
+              );
+            }
+            //
+          );
+        }
+      );
+    });
   });
 });
