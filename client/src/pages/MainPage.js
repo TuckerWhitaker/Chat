@@ -140,11 +140,12 @@ function MainPage() {
     await delay(Math.random() * 1000);
     for (let i = 0; i < document.cookie.length; i++) {
       if (document.cookie.substring(i, i + 4) === "uid=") {
-        socket.emit(
-          "verify",
-          document.cookie.substring(i + 4, document.cookie.length)
-        );
-        getFriendsList();
+        socket
+          .emit(
+            "verify",
+            document.cookie.substring(i + 4, document.cookie.length)
+          )
+          .then(getFriendsList());
       }
     }
   }

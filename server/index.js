@@ -137,7 +137,7 @@ io.on("connection", (socket) => {
           "SELECT * FROM users WHERE name = ?",
           [userslist[i][0]],
           (err, result) => {
-            socket.data.UID = result[0].id;
+            socket.UID = result[0].id;
             userslist.splice(i, 1);
           }
         );
@@ -220,7 +220,9 @@ io.on("connection", (socket) => {
       io.in(socketid)
         .fetchSockets()
         .then((sockets) => {
-          res(sockets.data.UID);
+          console.log("sockets");
+          console.log(sockets);
+          res(sockets[0].UID);
         });
     });
   }
@@ -237,6 +239,7 @@ io.on("connection", (socket) => {
 
   socket.on("getFriendsList", () => {
     GetIdBySocketId(socket.id).then((user) => {
+      console.log(user);
       db.query(
         "SELECT id FROM friends WHERE fid = ? UNION SELECT fid FROM friends WHERE id = ? ;",
         [user, user],
