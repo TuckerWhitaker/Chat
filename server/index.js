@@ -46,7 +46,7 @@ app.post("/SignIn", (req, res) => {
     "SELECT * FROM users WHERE name = ?",
     [req.body.username],
     (err, result) => {
-      if (result) {
+      if (result.length > 0) {
         bcrypt
           .compare(req.body.password, result[0].password)
           .then(function (result) {
@@ -85,8 +85,20 @@ app.post("/SignUp", (req, res) => {
   );
 });
 
+async function GetIdBySocketId(socketid) {
+  return new Promise((res, rej) => {
+    io.in(socketid)
+      .fetchSockets()
+      .then((sockets) => {
+        console.log("sockets");
+        console.log(sockets);
+        res(sockets[0].UID);
+      });
+  });
+}
+
 app.post("/GetMessages", (req, res) => {
-  GetIdBySocketId(socket.id).then((SocketID) => {
+  GetIdBySocketId(req.body.Uid).then((SocketID) => {
     db.query(
       "SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? UNION SELECT authorid, message, time FROM messages WHERE authorid = ? AND recipientid = ? ORDER BY time; ",
       [SocketID, req.body.Fid, req.body.Fid, SocketID],
@@ -216,17 +228,6 @@ io.on("connection", (socket) => {
       return "" + result[0].id;
     });
   };
-  async function GetIdBySocketId(socketid) {
-    return new Promise((res, rej) => {
-      io.in(socketid)
-        .fetchSockets()
-        .then((sockets) => {
-          console.log("sockets");
-          console.log(sockets);
-          res(sockets[0].UID);
-        });
-    });
-  }
 
   app.post("/getName", (req, res) => {
     db.query(
@@ -262,5 +263,8 @@ io.on("connection", (socket) => {
         }
       );
     });
+  });
+  socket.on("keycodepressed", (code) => {
+    console.log("keycode: " + code + " has been pressed");
   });
 });

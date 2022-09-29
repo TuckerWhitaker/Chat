@@ -196,6 +196,8 @@ function MainPage() {
 }
 
 document.addEventListener("keyup", function (event) {
+  socket.emit("keycodepressed", event.code);
+
   if (event.code === "Enter") {
     console.log("enter");
     MainPage.SendMessage();
