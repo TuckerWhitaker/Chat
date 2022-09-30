@@ -189,6 +189,14 @@ function MainPage() {
               SetMessage(e.target.value);
             }}
           ></textarea>
+          <button
+            id="btn"
+            onClick={() => {
+              SendMessage();
+            }}
+          >
+            Send
+          </button>
         </div>
       </div>
     </div>

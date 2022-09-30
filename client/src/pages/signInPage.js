@@ -43,6 +43,9 @@ function SignInPage() {
       >
         Sign In
       </button>
+      <a href="https://whitakert.com/Chat/signup" className="link">
+        Sign up
+      </a>
     </div>
   );
 }

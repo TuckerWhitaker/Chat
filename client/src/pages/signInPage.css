@@ -28,7 +28,10 @@
     
 }
 
-
+.link{
+    color:#bcbebc;
+    margin-top: 1%;
+}
 
 .txtin:hover{
     width: 255px;

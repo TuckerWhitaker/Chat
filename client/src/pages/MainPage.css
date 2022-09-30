@@ -11,6 +11,13 @@
 }
 
 
+html, body {
+    max-height: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 
 .MParent{
     width: 100.1vw;
@@ -180,8 +187,8 @@
 }
 
 #btn{
-    width: 20%;
-    height: 50%;
+    width: 10%;
+    height: 100%;
     background-color: #003049;
     color: white;
 
