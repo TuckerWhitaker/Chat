@@ -1,15 +1,3 @@
-@media only screen and (max-width: 1000px){
-    #Mparent{
-        min-width: 100vw;
-        max-width: 100vw;
-    }
-    #Friends{
-        max-width: 15%;
-        min-width: 15%;
-    }
-
-}
-
 
 html, body {
     max-height: 100%;
@@ -18,10 +6,13 @@ html, body {
     overflow-y: hidden;
 }
 
+#GroupName{
+    font-size: 3vh;
+}
 
 .MParent{
-    width: 100.1vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;  
     background: #2A2A2A;
     display: flex;
     flex-direction: row;
@@ -29,19 +20,20 @@ html, body {
 
 .container{
     color: white;
-    border-width: 1px;
-    border-color: #4C4C4C;
-    border-style: solid;
+
 }
 
 #Friends{
     display: flex;
     width: 10%;
-    height: 99%;
+    height: 100%;
     background-color: #2A2A2A;
     justify-content: top;
     flex-direction: column;
     align-items: center;
+    border-right-color: #4C4C4C;
+    border-right-style: solid;
+    border-right-width: .1vw;
 }
 
 #frtxt{
@@ -62,7 +54,7 @@ html, body {
     color: white;
     margin-top: 1px;
     margin-bottom: 5px;
-    font-size: 100%;
+    font-size: 2vh;
 }
 
 #frbtn:hover{
@@ -104,9 +96,7 @@ html, body {
 #Chat{
     height: 100%;
     width: 100%;
-    border-width: 1px;
-    border-color: #4C4C4C;
-    border-style: solid;
+    font-size: 2vh;
 }
 
 #chatHeader{
@@ -166,17 +156,14 @@ html, body {
 
 #inputContainer{
     width: 100%;
-    height: 9%;
+    height: 10%;
     background-color:#2A2A2A;
-    border-width: 1px;
-    border-color: #4C4C4C;
-    border-style: solid;
     display: flex;
     align-items: center;
 }
 
 #txt{
-    width: 100%;
+    width: 80%;
     resize: none;
     height: 90%;
     font-size: 150%;
@@ -187,10 +174,11 @@ html, body {
 }
 
 #btn{
-    width: 10%;
+    width: 20%;
     height: 100%;
     background-color: #003049;
     color: white;
+    font-size: 2.5vh;
 
 }
 

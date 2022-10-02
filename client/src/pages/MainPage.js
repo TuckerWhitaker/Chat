@@ -169,14 +169,14 @@ function MainPage() {
             addFriend();
           }}
         >
-          Add Friend
+          Add
         </button>
         <div id="FriendsList"></div>
       </div>
       <div className="container" id="Chat">
         <div id="chatHeader">
           <h1 id="GroupName">Group/Username</h1>
-          <h3>Members</h3>
+          <h3></h3>
         </div>
         <div id="chatContainer">
           <div>chat!</div>
