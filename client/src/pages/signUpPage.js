@@ -12,7 +12,7 @@ function SignUpPage() {
       password: password,
     }).then((response) => {
       if (response.data === "success") {
-        alert("success");
+        window.location.replace("https://whitakert.com/Chat/signin");
       }
     });
   };
