@@ -59,8 +59,9 @@ function MainPage() {
   };
 
   const addFriend = () => {
-    socket.emit("addFriend", friendName);
-    getFriendsList();
+    socket.emit("addFriend", friendName).then(() => {
+      getFriendsList();
+    });
   };
 
   socket.on("verified", () => {
