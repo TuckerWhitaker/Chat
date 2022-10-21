@@ -54,12 +54,13 @@ function MainPage() {
     startconnect();
   });
 
-  const addFriend = () => {
-    socket.emit("addFriend", friendName);
-  };
-
   const getFriendsList = () => {
     socket.emit("getFriendsList");
+  };
+
+  const addFriend = () => {
+    socket.emit("addFriend", friendName);
+    getFriendsList();
   };
 
   socket.on("verified", () => {
@@ -132,8 +133,6 @@ function MainPage() {
   };
 
   async function SendMessage() {
-    await delay(Math.random() * 1000);
-
     sendMessage();
   }
 
