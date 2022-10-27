@@ -255,6 +255,7 @@ io.on("connection", (socket) => {
                 (err, result) => {
                   db.query("DROP TABLE temp");
                   socket.emit("FriendsList", result);
+                  socket.emit("friendAdded");
                 }
               );
             }

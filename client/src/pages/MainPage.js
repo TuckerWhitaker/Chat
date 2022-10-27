@@ -1,35 +1,18 @@
 import axios, { Axios } from "axios";
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
+import Message from "../components/Message";
 const { io } = require("socket.io-client");
 var socket = io("wss://whitakert.com:443");
 
-console.log(socket);
 function delay(time) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
 const createMessage = (message) => {
-  let m = document.createElement("div");
-  let mChild = document.createElement("div");
-  mChild.className = "Cinfo";
-  m.appendChild(mChild);
-  let mChild2 = document.createElement("div");
-  mChild2.className = "Cmessage";
-  m.appendChild(mChild2);
-
-  let namediv = document.createElement("div");
-  let datediv = document.createElement("div");
-  namediv.className = "Cname";
-  datediv.className = "Cdate";
-  mChild.appendChild(namediv);
-  mChild.appendChild(datediv);
-
-  namediv.innerHTML = message[0];
-  datediv.innerHTML = message[2];
-  mChild2.innerHTML = message[1];
-  m.className = "msg";
-  document.getElementById("chatContainer").appendChild(m);
+  document
+    .getElementById("chatContainer")
+    .appendChild(<Message Message={message}></Message>);
 };
 
 socket.on("recieveMessage", (message) => {
@@ -59,10 +42,12 @@ function MainPage() {
   };
 
   const addFriend = () => {
-    socket.emit("addFriend", friendName).then(() => {
-      getFriendsList();
-    });
+    socket.emit("addFriend", friendName);
   };
+
+  socket.on("friendAdded", () => {
+    getFriendsList();
+  });
 
   socket.on("verified", () => {
     getFriendsList();
