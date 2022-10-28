@@ -28,6 +28,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 server.listen(3001);
 console.log("server running on port 3001");
 
+function delay(time) {
+  return new Promise((resolve) => setTimeout(resolve, time));
+}
+
 let userslist = [];
 
 app.get("/", (req, res) => {
@@ -138,6 +142,11 @@ app.post("/GetMessages", (req, res) => {
   });
 });
 
+async function RemoveUser(i) {
+  await delay(6000);
+  userslist.splice(i, 1);
+}
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   console.log(socket.id);
@@ -150,7 +159,8 @@ io.on("connection", (socket) => {
           [userslist[i][0]],
           (err, result) => {
             socket.UID = result[0].id;
-            userslist.splice(i, 1);
+            //userslist.splice(i, 1);
+            RemoveUser(i);
             socket.emit("verified");
           }
         );
